@@ -1,6 +1,6 @@
 # Author: Elisabeth Nesmith
 # Title: Data Cleaning
-# Purpose: Loading and cleaning data, creating basic visualizations
+# Purpose: Loading and cleaning data
 
 # Load necessary packages
 library(data.table)
@@ -11,12 +11,13 @@ library(tidyverse)
 # student wellbeing and belonging.
 
 # Load data as data tables
-hms_data <- (read.csv("Data/hms_2021_data_subset.csv"))
+hms_data <- as.data.table(read.csv("Data/hms_2021_data_sub.csv"))
 
 # check for NA categories
 no_gender <- hms_data %>% 
   filter(is.na(gender_female) & is.na(gender_male) & is.na(gender_transm) & is.na(gender_transf) & is.na(gender_queernc) &
            is.na(gender_nonbin) & is.na(gender_selfID))
+
 hms_data %>% 
   filter(is.na(aca_impa))
 
@@ -26,8 +27,31 @@ hms_data %>%
 hms_data %>% 
   filter(is.na(belong1))
 
-# remove rows with NA gender and NA academic impact (academic impact has fewest number of NAs of three response variables)
+# remove rows with NA gender and NA response variables
+hms_data_new <- hms_data %>% 
+  filter(!is.na(gender_female) | !is.na(gender_male) | !is.na(gender_transm) | !is.na(gender_transf) | !is.na(gender_queernc) |
+           !is.na(gender_nonbin) | !is.na(gender_selfID)) %>% 
+  filter(!is.na(aca_impa)) %>% 
+  filter(!is.na(discrim)) %>% 
+  filter(!is.na(belong1))
 
+# check how many sex at birth is NA
+hms_data_new %>% 
+  filter(is.na(sex_birth))
 
+# investigate descriptive statistics of new data
+hms_data_new %>% 
+  filter(!is.na(gender_transm) | !is.na(gender_transf) | !is.na(gender_queernc) |
+           !is.na(gender_nonbin) | !is.na(gender_selfID))
 
+# 1878 rows, out of 43487 rows - 4.3% of sample identifies as trans, genderqueer, gender non-conforming, nonbinary, or otherwise non-cis 
+
+# create new variable which encompasses all non-cis gender categories on the survey
+hms_data_new <- hms_data_new %>% 
+  mutate(trans = ifelse(!is.na(gender_transm) | !is.na(gender_transf) | !is.na(gender_queernc) | 
+                        !is.na(gender_nonbin) | !is.na(gender_selfID), 1, 0))
+
+# create variable for cisgender students
+hms_data_new <- hms_data_new %>% 
+  mutate(cis = ifelse(trans == 0, 1, 0))
 
