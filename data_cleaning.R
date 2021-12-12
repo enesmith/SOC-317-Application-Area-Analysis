@@ -55,3 +55,5 @@ hms_data_new <- hms_data_new %>%
 hms_data_new <- hms_data_new %>% 
   mutate(cis = ifelse(trans == 0, 1, 0))
 
+# write csv of hms_data_new into data file
+write_csv(hms_data_new, "Data//hms_data_new.csv")
