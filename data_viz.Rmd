@@ -1,0 +1,16 @@
+---
+title: "data_visualizations"
+author: "Elisabeth Nesmith"
+date: "12/11/2021"
+output: html_document
+---
+```{r}
+library(data.table)
+library(tidyverse)
+```
+
+```{r}
+# load in hms_data_new
+hms_data <- read_csv("Data/hms_data_new.csv")
+```
+
