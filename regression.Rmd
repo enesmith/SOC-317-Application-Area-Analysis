@@ -1,0 +1,76 @@
+---
+title: "regression"
+author: "Elisabeth Nesmith"
+date: "12/13/2021"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+
+# load in hms_data_new
+hms_data <- read_csv("Data/hms_data_new.csv")
+```
+
+```{r}
+# transform response variables to binary variables
+hms_data <- hms_data %>% 
+  mutate(aca_impa_bin = ifelse(aca_impa == 1 | aca_impa == 2, 0, 1)) %>% 
+  mutate(belong_bin = ifelse(belong1 == 1 | belong1 == 2 | belong1 == 3, 0, 1)) %>% 
+  mutate(discrim_bin = ifelse(discrim == 1, 0, 1))
+
+# convert race NAs to 0s
+hms_data[, 12:19][is.na(hms_data[, 12:19])] <- 0
+
+# convert variables to factors
+factors <- c(4:25)
+
+hms_data[, 4:25] <- lapply(hms_data[,factors], factor)
+```
+
+# Modeling Academic Impact
+
+```{r}
+# run model for academic impact, controlling for race and fincur, trans is predictor variable
+aca_impa_model <- glm(data = hms_data, formula = aca_impa_bin ~ race_black + race_ainaan + race_asian + race_his_temp + race_pi + race_mides + race_white + race_other + fincur + trans)
+
+summary(aca_impa_model)
+```
+
+```{r}
+# odds ratio
+exp(coef(aca_impa_model))
+```
+
+A trans student is 1.2 times more likely to have experienced 3 or more academic impact days than a cis student.
+
+# Modeling Sense of Belonging
+```{r}
+# run model for sense of belonging, controlling for race and fincur, trans is predictor variable
+belong_model <- glm(data = hms_data, formula = belong_bin ~ race_black + race_ainaan + race_asian + race_his_temp + race_pi + race_mides + race_white + race_other + fincur + trans)
+
+summary(belong_model)
+```
+
+```{r}
+# odds ratio
+exp(coef(belong_model))
+```
+
+A trans student is 1.09 times more likely to feel as if they do not belong on campus than a cis student.
+
+# Modeling Discrimination
+
+```{r}
+# run model for discrimination, controlling for race and fincur, trans is predictor variable
+discrim_model <- glm(data = hms_data, formula = discrim_bin ~ race_black + race_ainaan + race_asian + race_his_temp + race_pi + race_mides + race_white + race_other + fincur + trans)
+
+summary(discrim_model)
+```
+
+```{r}
+# odds ratio
+exp(coef(discrim_model))
+```
+
+A trans student is 1.3 times more likely to experience discrimination than a cis student.
