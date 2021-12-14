@@ -12,5 +12,140 @@ library(tidyverse)
 ```{r}
 # load in hms_data_new
 hms_data <- read_csv("Data/hms_data_new.csv")
+
+# convert variables to factors
+factors <- c(4:25)
+
+hms_data[, 4:25] <- lapply(hms_data[,factors], factor)
+
 ```
+
+# Academic Impact Visualizations
+
+```{r}
+# bar graph of cis students and academic impact - In the past 4 weeks, how many days have you felt that emotional or mental difficulties have hurt your academic performance?
+
+# 1 - None
+# 2 - 1-2 Days
+# 3 - 3-5 Days
+# 4 - 6 or more days
+
+# create text variable of aca_impa
+hms_data %>% 
+  mutate(academic_impact = as.factor(ifelse(aca_impa == 1, "None",
+                                ifelse(aca_impa == 2, "1-2 Days",
+                                      ifelse(aca_impa == 3, "3-5 Days", "6 or More Days"))))) %>% 
+  filter(cis == 1) %>% 
+  ggplot(aes(x = academic_impact, fill = academic_impact)) +
+    geom_bar(aes(y = (..count..)/sum(..count..))) +
+    labs(title = "Academic Impact Experienced by Cisgender Students", x = "Number of days in the past 4 weeks", y = "Proportion")
+
+```
+
+Approximately 29% of cisgender students indicated that they had one to two days in the past month when they felt their academic performance was harmed by emotional or mental difficulties. 16% of students did not have any days when they felt this way, while approximately 27% had experienced each of 3-5 or 6 or more days of this.
+
+```{r}
+# bar graph of trans students and academic impact
+hms_data %>% 
+  mutate(aca_impa = ifelse(aca_impa == 1, "None",
+                           ifelse(aca_impa == 2, "1-2 Days",
+                                  ifelse(aca_impa == 3, "3-5 Days", "6 or more days")))) %>%
+  filter(trans == 1) %>% 
+  ggplot(aes(x = aca_impa, fill = aca_impa)) +
+    geom_bar(aes(y = (..count..)/sum(..count..))) +
+    labs(title = "Academic Impact Experienced by Trans Students", x = "Number of days in the past 4 weeks", y = "Proportion")
+```
+
+The majority of trans students (~52%) reported that they felt their academic performance suffered from emotional and mental difficulties 6 or more days of the past month. 27% reported feeling this way 3-5 days, 16% 1-2 days, and only about 5% did not feel this way at all.
+
+# Sense of Belonging Visualizations
+
+```{r}
+# bar graph of cis students and sense of belonging - How much do you agree with the following statement?: I see myself as a part of the campus community.
+
+# 1 - Strongly Agree
+# 2 - Agree
+# 3 - Somewhat Agree
+# 4 - Somewhat Disagree
+# 5 - Disagree
+# 6 - Strongly Disagree
+
+hms_data %>% 
+  mutate(belong1 = ifelse(belong1 == 1, "Strongly Agree",
+                           ifelse(belong1 == 2, "Agree",
+                                  ifelse(belong1 == 3, "Somewhat Agree", 
+                                         ifelse(belong1 == 4, "Somewhat Disagree",
+                                                ifelse(belong1 == 5, "Disagree", "Strongly Disagree")))))) %>%
+  filter(cis == 1) %>% 
+  ggplot(aes(x = belong1, fill = belong1)) +
+    geom_bar(aes(y = (..count..)/sum(..count..))) +
+    labs(title = "Sense of Belonging Among Cisgender Students", x = "I See Myself as a Part of the Campus Community", y = "Proportion") +
+    theme(axis.text.x = element_text(angle = 30, vjust = 1, hjust=1))
+    
+```
+
+30% of cisgender students somewhat agree that they see themselves as part of the campus community. Next highest, about 24% of students agree. The lowest category, strongly disagree, is only about 7% of students. 
+
+```{r}
+hms_data %>% 
+  mutate(belong1 = ifelse(belong1 == 1, "Strongly Agree",
+                           ifelse(belong1 == 2, "Agree",
+                                  ifelse(belong1 == 3, "Somewhat Agree", 
+                                         ifelse(belong1 == 4, "Somewhat Disagree",
+                                                ifelse(belong1 == 5, "Disagree", "Strongly Disagree")))))) %>%
+  filter(trans == 1) %>% 
+  ggplot(aes(x = belong1, fill = belong1)) +
+    geom_bar(aes(y = (..count..)/sum(..count..))) +
+    labs(title = "Sense of Belonging Among Trans Students", x = "I See Myself as a Part of the Campus Community", y = "Proportion") +
+    theme(axis.text.x = element_text(angle = 30, vjust = 1, hjust=1))
+```
+
+For trans students, somewhat agree is also the highest category (about 28%), but agree, disagree, and somewhat disagree are all very close together (between 17% and 18%). Finally, strongly disagree (5%) is much higher than strongly agree (12%).
+
+# Discrimination Visualizations
+
+```{r}
+# bar graph of cis students and discrimination - In the past 12 months, how many times have you been treated unfairly because of your race, ethnicity, gender, sexual orientation, or cultural background?
+
+# 1 - Never
+# 2 - Once in Awhile
+# 3 - Sometimes
+# 4 - A lot
+# 5 - Most of the Time
+# 6 - Almost All of the Time
+
+hms_data %>% 
+  mutate(discrim = ifelse(discrim == 1, "Never",
+                           ifelse(discrim == 2, "Once in Awhile",
+                                  ifelse(discrim == 3, "Sometimes", 
+                                         ifelse(discrim == 4, "A lot",
+                                                ifelse(discrim == 5, "Most of the Time", "Almost All of the Time")))))) %>%
+  filter(cis == 1) %>% 
+  ggplot(aes(x = discrim, fill = discrim)) +
+    geom_bar(aes(y = (..count..)/sum(..count..))) +
+    labs(title = "Discrimination Among Cisgender Students", x = "Frequency of Discrimination in Past 12 Months", y = "Proportion") +
+    theme(axis.text.x = element_text(angle = 30, vjust = 1, hjust=1))
+    
+```
+
+65% of cisgender students did not experience discrimination in the past year.
+
+```{r}
+# bar graph of trans students and discrimination 
+
+hms_data %>% 
+  mutate(discrim = ifelse(discrim == 1, "Never",
+                           ifelse(discrim == 2, "Once in Awhile",
+                                  ifelse(discrim == 3, "Sometimes", 
+                                         ifelse(discrim == 4, "A lot",
+                                                ifelse(discrim == 5, "Most of the Time", "Almost All of the Time")))))) %>%
+  filter(trans == 1) %>% 
+  ggplot(aes(x = discrim, fill = discrim)) +
+    geom_bar(aes(y = (..count..)/sum(..count..))) +
+    labs(title = "Discrimination Among Trans Students", x = "Frequency of Discrimination in Past 12 Months", y = "Proportion") +
+    theme(axis.text.x = element_text(angle = 30, vjust = 1, hjust=1))
+    
+```
+
+Only 37% of trans students did not experience discrimination at all in the past year. 
 
