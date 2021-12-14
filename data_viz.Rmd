@@ -100,7 +100,7 @@ hms_data %>%
     theme(axis.text.x = element_text(angle = 30, vjust = 1, hjust=1))
 ```
 
-For trans students, somewhat agree is also the highest category (about 28%), but agree, disagree, and somewhat disagree are all very close together (between 17% and 18%). Finally, strongly disagree (5%) is much higher than strongly agree (12%).
+For trans students, somewhat agree is also the highest category (about 28%), but agree, disagree, and somewhat disagree are all very close together (between 17% and 18%). Finally, strongly disagree (12%) is much higher than strongly agree (5%).
 
 # Discrimination Visualizations
 
